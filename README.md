@@ -6,7 +6,7 @@ dan toko kalian langsung bisa dibagikan lewat tautan.
 
 Dibuat untuk tutorial YouTube channel **Bu Ah (@buah2891)**:
 **"Bikin Toko Online Gratis dari HP"** (slot 27 Nov 2026, 01:00 WIB).
-Video: _(tautan YouTube diisi setelah video terbit)_.
+Video: https://youtu.be/DbR_gbfYsSQ
 
 ## Yang ada di repo ini
 
