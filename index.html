@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toko Buah Rasa — Toko Online Gratis dari HP</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: #f6f1e7; color: #222; }
+  header { background: #0b1e3a; color: #fff; padding: 28px 16px; text-align: center; }
+  header h1 { font-size: 28px; margin-bottom: 6px; }
+  header p { color: #ffd98a; font-size: 15px; }
+  main { max-width: 960px; margin: 0 auto; padding: 20px 16px 40px; }
+  .info { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 16px; margin-bottom: 20px; font-size: 15px; line-height: 1.6; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  .card { background: #fff; border: 1px solid #ddd; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+  .card img { width: 100%; height: 180px; object-fit: cover; background: #e8e2d4; }
+  .card-body { padding: 14px; flex: 1; display: flex; flex-direction: column; }
+  .card-body h2 { font-size: 18px; margin-bottom: 6px; }
+  .card-body p { font-size: 14px; line-height: 1.5; color: #444; flex: 1; }
+  .price { font-size: 18px; font-weight: bold; color: #0b6e3a; margin: 10px 0; }
+  .stock { font-size: 13px; color: #666; margin-bottom: 10px; }
+  .btn { display: block; text-align: center; background: #25d366; color: #fff; text-decoration: none; font-weight: bold; padding: 12px; border-radius: 8px; }
+  .btn:hover { background: #1eb856; }
+  footer { text-align: center; font-size: 13px; color: #666; padding: 20px; line-height: 1.6; }
+  .error { background: #fff3cd; border: 1px solid #e0a800; border-radius: 10px; padding: 16px; font-size: 15px; }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="store-name">Toko Buah Rasa</h1>
+  <p id="store-tagline">Toko online gratis dari HP — lihat, pilih, pesan lewat WhatsApp.</p>
+</header>
+<main>
+  <div class="info" id="store-info">
+    Pesan lewat WhatsApp: ketuk tombol <b>Pesan via WhatsApp</b> di produk yang kalian mau.
+    Harga sudah termasuk kemasan. Ongkir dihitung setelah alamat kirim dikonfirmasi lewat chat.
+  </div>
+  <div class="grid" id="catalog"></div>
+  <div class="error" id="load-error" style="display:none">
+    Katalog tidak bisa dimuat. Pastikan file <code>products.json</code> ada di folder yang sama
+    dengan file ini, lalu muat ulang halaman.
+  </div>
+</main>
+<footer>
+  Template toko statis gratis — repo
+  <a href="https://github.com/buahrasa01-hub/toko-online-gratis-hp">buahrasa01-hub/toko-online-gratis-hp</a>.<br>
+  Dibuat untuk tutorial YouTube channel Bu Ah (@buah2891): "Bikin Toko Online Gratis dari HP".
+</footer>
+<script>
+  // Nomor WhatsApp penjual, format internasional TANPA tanda +.
+  // GANTI dengan nomor kalian, misal 6281234567890.
+  var WA_NUMBER = "6281234567890";
+
+  function rupiah(n) {
+    return "Rp" + n.toLocaleString("id-ID");
+  }
+
+  fetch("products.json")
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (data) {
+      if (data.store && data.store.name) document.getElementById("store-name").textContent = data.store.name;
+      if (data.store && data.store.tagline) document.getElementById("store-tagline").textContent = data.store.tagline;
+      if (data.store && data.store.whatsapp) WA_NUMBER = data.store.whatsapp;
+      var grid = document.getElementById("catalog");
+      (data.products || []).forEach(function (p) {
+        var card = document.createElement("article");
+        card.className = "card";
+        var img = document.createElement("img");
+        img.src = p.image || "";
+        img.alt = p.name || "Produk";
+        var body = document.createElement("div");
+        body.className = "card-body";
+        var h = document.createElement("h2");
+        h.textContent = p.name || "Produk tanpa nama";
+        var desc = document.createElement("p");
+        desc.textContent = p.description || "";
+        var price = document.createElement("div");
+        price.className = "price";
+        price.textContent = rupiah(p.price || 0);
+        var stock = document.createElement("div");
+        stock.className = "stock";
+        stock.textContent = (p.stock > 0) ? ("Stok: " + p.stock) : "Stok habis";
+        var btn = document.createElement("a");
+        btn.className = "btn";
+        var msg = "Halo, saya mau pesan " + (p.name || "") + " (" + rupiah(p.price || 0) + "). Apakah stoknya masih ada?";
+        btn.href = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(msg);
+        btn.target = "_blank";
+        btn.rel = "noopener";
+        btn.textContent = "Pesan via WhatsApp";
+        body.appendChild(h); body.appendChild(desc); body.appendChild(price);
+        body.appendChild(stock); body.appendChild(btn);
+        card.appendChild(img); card.appendChild(body);
+        grid.appendChild(card);
+      });
+      if (!data.products || data.products.length === 0) {
+        document.getElementById("load-error").style.display = "block";
+        document.getElementById("load-error").textContent = "Katalog kosong: file products.json tidak berisi produk.";
+      }
+    })
+    .catch(function () {
+      document.getElementById("load-error").style.display = "block";
+    });
+</script>
+</body>
+</html>
